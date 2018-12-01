@@ -1,0 +1,47 @@
+shapes.png
+size: 241, 219
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+circle
+  rotate: false
+  xy: 192, 72
+  size: 48, 49
+  orig: 48, 49
+  offset: 0, 0
+  index: -1
+exagon
+  rotate: false
+  xy: 148, 150
+  size: 72, 63
+  orig: 72, 63
+  offset: 0, 0
+  index: -1
+rectangle
+  rotate: true
+  xy: 150, 1
+  size: 145, 40
+  orig: 145, 40
+  offset: 0, 0
+  index: -1
+square
+  rotate: false
+  xy: 1, 1
+  size: 147, 147
+  orig: 147, 147
+  offset: 0, 0
+  index: -1
+triangle
+  rotate: false
+  xy: 1, 150
+  size: 145, 68
+  orig: 145, 68
+  offset: 0, 0
+  index: -1
+triangle2
+  rotate: true
+  xy: 192, 1
+  size: 69, 47
+  orig: 69, 47
+  offset: 0, 0
+  index: -1

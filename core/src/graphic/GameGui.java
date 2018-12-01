@@ -15,7 +15,7 @@ import logic.Square;
 
 public class GameGui {
 
-	private LoadTexture loadTexture;
+	LoadTexture loadTexture;
 	private SpriteBatch batch;
 	OrthographicCamera camera;
 	private ShapeRenderer shapeRenderer;
@@ -39,6 +39,14 @@ public class GameGui {
 				endContainerX -= (((Square)shape).getBase() + 30); 
 			}
 		}
+		
+		loadTexture = new LoadTexture();
+		batch = new SpriteBatch();
+		shapeRenderer = new ShapeRenderer();
+		camera = new OrthographicCamera(1800, 900); 
+		camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0); 
+	}
+	public GameGui() {
 		
 		loadTexture = new LoadTexture();
 		batch = new SpriteBatch();
