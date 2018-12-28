@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -25,6 +26,7 @@ import com.codeandweb.physicseditor.PhysicsShapeCache;
 import graphic.GameGui;
 import graphic.LoadTexture;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
@@ -36,6 +38,7 @@ public class GameManager extends ApplicationAdapter {
 	private final Vector2 mouseInWorld2D = new Vector2();
 	private final Vector3 mouseInWorld3D = new Vector3();
 	LoadTexture loadTexture;
+	private int levelnum=2;
 
 	/**
 	 * This affects the speed of our simulation, and how gravity behaves. This is
@@ -142,15 +145,12 @@ public class GameManager extends ApplicationAdapter {
 	 * bodies in {@link #shapeBodies}.
 	 */
 	Sprite[] shapeSprites = new Sprite[COUNT];
-
-	String[] level1 = new String[] { "square", "square", "square", "triangle", "triangle" };
-	Sprite[] level1Sprites = new Sprite[] { sprites.get(level1[0]), sprites.get(level1[1]), sprites.get(level1[2]),
-			sprites.get(level1[3]), sprites.get(level1[4]) };
-	String[] level2 = new String[] { "circle", "circle", "rectangle", "square", "triangle" };
-
+	String[][] levels = new String[][] {{ "square", "square", "square", "triangle", "triangle" },{ "circle", "circle", "rectangle", "square", "triangle" }};
+//	Animation anim = tools.GifDecoder.loadGIFAnimation(0, Gdx.files.internal("/Crazy Stackers-core/assets/Countdown.gif").read());
+	int currentLevel=0;
 	@Override
 	public void create() {
-
+		
 		gameGui = new GameGui();
 
 		Box2D.init();
@@ -193,8 +193,8 @@ public class GameManager extends ApplicationAdapter {
 		base = new Texture(Gdx.files.internal("base.png"));
 		container = new Texture(Gdx.files.internal("container.png"));
 
-		for (int i = 0; i < level1.length; i++) {
-			shapeSprites[i] = sprites.get(level1[i]);
+		for (int i = 0; i < levels[currentLevel].length; i++) {
+			shapeSprites[i] = sprites.get(levels[currentLevel][i]);
 		}
 	}
 
@@ -205,12 +205,12 @@ public class GameManager extends ApplicationAdapter {
 
 //		Random random = new Random();
 //			String name = shapeNames[random.nextInt(shapeNames.length)];
-		String name = level1[currentShapeIndex];
+//		String name = levels[currentLevel][currentShapeIndex];
 
 		float x = mouseInWorld2D.x;
 		float y = mouseInWorld2D.y;
 
-		shapeBodies[currentShapeIndex] = createBody(level1[currentShapeIndex], x, y, 0);
+		shapeBodies[currentShapeIndex] = createBody(levels[currentLevel][currentShapeIndex], x, y, 0);
 		currentShapeIndex++;
 	}
 
@@ -301,6 +301,7 @@ public class GameManager extends ApplicationAdapter {
 		batch.draw(background, 0, 0, 200, 200);
 		batch.draw(base, 50, 42, 105, 10);
 
+//		batch.draw((Texture) anim.getKeyFrame(Gdx.graphics.getDeltaTime(), true),0,0);
 		// Disegna la Forma Corrente sul puntatore
 		if (currentShapeIndex < shapeSprites.length) {
 			drawSprite(shapeSprites[currentShapeIndex], mouseInWorld2D.x, mouseInWorld2D.y, 0);
@@ -318,7 +319,7 @@ public class GameManager extends ApplicationAdapter {
 		batch.draw(container, 157, 2, 40, 30);
 
 		// Draw shapes in the container
-		for (int i = 0; i < level1Sprites.length; i++)
+		for (int i = 0; i < shapeSprites.length; i++)
 			drawSpriteResized(shapeSprites[i], 165 - (i) * 40+(currentShapeIndex*40), 4, 0);
 
 		batch.end();
@@ -334,17 +335,50 @@ public class GameManager extends ApplicationAdapter {
 
 	}
 
+	private TimerTask timerTask = new TimerTask() {
+		
+		@Override
+		public void run() {
+			System.out.println("Hai Vinto");
+			nextLevel();
+		}
+	};
+	boolean run=true;
+	LocalTime time;
 	public void winCheck() {
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-				System.out.println("Hai Vinto");
-				Gdx.app.exit();
-				//TODO nextLevel
-			}
-		}, 5000);
+//		time=java.time.LocalTime.now().plusSeconds(5);
+//		
+//		System.out.println(time);
+//		System.out.println(java.time.LocalTime.now()+" Corrente");
+//		while(java.time.LocalTime.now()!=time) {
+//			System.out.println("In attesa");
+//		}
+//		System.out.println("132");
+		
+		if(currentLevel!=levelnum-1)
+		nextLevel();
+		else {
+			System.out.println("Gioco Finito");
+			//TODO Schermata finale
+		}
+		
+//		final Timer timer = new Timer();
+//		timer.schedule(new TimerTask() {
+//
+//			@Override
+//			public void run() {
+//				if(run) {
+//				System.out.println("Hai Vinto");
+//				nextLevel();
+//				}
+//				else {
+////				Gdx.app.exit();
+//					this.cancel();
+//					timer.purge();
+//				}
+//				//TODO nextLevel
+//			}
+//		}, 5000);
 	}
 
 	/**
@@ -399,5 +433,13 @@ public class GameManager extends ApplicationAdapter {
 
 		debugRenderer.dispose();
 		
+	}
+	public void nextLevel() {
+		currentLevel++;
+		currentShapeIndex=0;
+         for(Body bod: shapeBodies){
+             world.destroyBody(bod);
+         }
+         loadSprites();
 	}
 }
