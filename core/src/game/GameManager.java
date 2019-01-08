@@ -2,6 +2,8 @@ package game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -32,7 +34,79 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+class Button {
+	public String name;
+	public Texture texture;
+	public int x;
+	public int y;
+	public int width;
+	public int height;
+	public boolean selected;
+
+	public Button(String name, Texture texture, int x, int y, int width, int height) {
+		this.name = name;
+		this.texture = texture;
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		selected = false;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+
+
+}
+
 public class GameManager extends ApplicationAdapter {
+	long firstClick = 0;
+	public boolean menu;
+	public boolean pausedMenu;
+
+	Button newGameButton;
+	Button exitButton;
+	Button startMenu;
+	Button resume;
+	Button restart;
 
 	private GameGui gameGui;
 	private final Vector2 mouseInWorld2D = new Vector2();
@@ -90,7 +164,15 @@ public class GameManager extends ApplicationAdapter {
 	Texture background;
 	Texture base;
 	Texture container;
-	
+
+	Texture newGame;
+	Texture exit;
+	Texture resumeT;
+	Texture restartT;
+	Texture startMenuT;
+
+	Texture paused;
+
 	SpriteBatch batch;
 
 	/**
@@ -146,11 +228,12 @@ public class GameManager extends ApplicationAdapter {
 	 */
 	Sprite[] shapeSprites = new Sprite[COUNT];
 	String[][] levels = new String[][] {{ "square", "square", "square", "triangle", "triangle" },{ "circle", "circle", "rectangle", "square", "triangle" }};
-//	Animation anim = tools.GifDecoder.loadGIFAnimation(0, Gdx.files.internal("/Crazy Stackers-core/assets/Countdown.gif").read());
+	//	Animation anim = tools.GifDecoder.loadGIFAnimation(0, Gdx.files.internal("/Crazy Stackers-core/assets/Countdown.gif").read());
 	int currentLevel=0;
 	@Override
 	public void create() {
-		
+		menu = true;
+
 		gameGui = new GameGui();
 
 		Box2D.init();
@@ -168,6 +251,7 @@ public class GameManager extends ApplicationAdapter {
 		physicsBodies = new PhysicsShapeCache("shapes2.xml");
 
 		debugRenderer = new Box2DDebugRenderer();
+
 
 	}
 
@@ -193,6 +277,20 @@ public class GameManager extends ApplicationAdapter {
 		base = new Texture(Gdx.files.internal("base.png"));
 		container = new Texture(Gdx.files.internal("container.png"));
 
+		newGame = new Texture(Gdx.files.internal("newgame.png"));
+		exit = new Texture(Gdx.files.internal("Exit.png"));
+		resumeT = new Texture(Gdx.files.internal("resume.png"));
+		restartT = new Texture(Gdx.files.internal("restart.png"));
+		startMenuT = new Texture(Gdx.files.internal("startMenu.png"));
+
+		paused = new Texture(Gdx.files.internal("Pausa.png"));
+
+		newGameButton = new Button("newgame", newGame, 75, 100, 20, 16);
+		exitButton = new Button("exit", exit, 105, 100, 20, 16);
+		resume = new Button("resume", resumeT, 50, 90, 20, 16);
+		restart = new Button("restart", restartT, 90, 90, 20, 16);
+		startMenu = new Button("startMenu", startMenuT, 130, 90, 20, 16);
+
 		for (int i = 0; i < levels[currentLevel].length; i++) {
 			shapeSprites[i] = sprites.get(levels[currentLevel][i]);
 		}
@@ -203,9 +301,9 @@ public class GameManager extends ApplicationAdapter {
 	 */
 	private void generateShape() {
 
-//		Random random = new Random();
-//			String name = shapeNames[random.nextInt(shapeNames.length)];
-//		String name = levels[currentLevel][currentShapeIndex];
+		//		Random random = new Random();
+		//			String name = shapeNames[random.nextInt(shapeNames.length)];
+		//		String name = levels[currentLevel][currentShapeIndex];
 
 		float x = mouseInWorld2D.x;
 		float y = mouseInWorld2D.y;
@@ -246,8 +344,8 @@ public class GameManager extends ApplicationAdapter {
 
 		createGround();
 
-//		gameGui.getCamera().viewportWidth = 1800; 
-//		gameGui.getCamera().viewportHeight = 900; 
+		//		gameGui.getCamera().viewportWidth = 1800; 
+		//		gameGui.getCamera().viewportHeight = 900; 
 		gameGui.getCamera().update();
 	}
 
@@ -283,60 +381,231 @@ public class GameManager extends ApplicationAdapter {
 
 	@Override
 	public void render() {
+		long secondClick = System.currentTimeMillis();
+		if(menu) {
+			mouseInWorld3D.x = Gdx.input.getX();
+			mouseInWorld3D.y = Gdx.input.getY();
+			mouseInWorld3D.z = 0;
+			gameGui.getCamera().unproject(mouseInWorld3D);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		mouseInWorld3D.x = Gdx.input.getX();
-		mouseInWorld3D.y = Gdx.input.getY();
-		mouseInWorld3D.z = 0;
-		gameGui.getCamera().unproject(mouseInWorld3D);
-		mouseInWorld2D.x = mouseInWorld3D.x;
-		mouseInWorld2D.y = mouseInWorld3D.y;
+			batch.begin();
 
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			batch.draw(background, 0, 0, 200, 200);
 
-		// Step the physics world.
-		stepWorld();
+			mouseClickMenu(mouseInWorld3D.x, mouseInWorld3D.y);
+			batch.draw(newGameButton.texture, newGameButton.x, newGameButton.y, newGameButton.width, newGameButton.height);
+			batch.draw(exitButton.texture, exitButton.x, exitButton.y, exitButton.width, exitButton.height);
 
-		batch.begin();
+			batch.end();
 
-		batch.draw(background, 0, 0, 200, 200);
-		batch.draw(base, 50, 42, 105, 10);
-
-//		batch.draw((Texture) anim.getKeyFrame(Gdx.graphics.getDeltaTime(), true),0,0);
-		// Disegna la Forma Corrente sul puntatore
-		if (currentShapeIndex < shapeSprites.length) {
-			drawSprite(shapeSprites[currentShapeIndex], mouseInWorld2D.x, mouseInWorld2D.y, 0);
 		}
-		// draw the shapes on the screen
-		for (int i = 0; i < currentShapeIndex; i++)
-			if (shapeBodies.length != 0) {
-				drawSprite(shapeSprites[i], shapeBodies[i].getPosition().x, shapeBodies[i].getPosition().y,
-						(float) Math.toDegrees(shapeBodies[i].getAngle()));
 
-				if (shapeBodies[i].getPosition().y < 0)
-					loseCheck();
+
+
+		else {
+
+			if(Gdx.input.isKeyPressed(Keys.P)) {
+				pausedMenu = true;
 			}
-		batch.draw(container, 2, 2, 150, 30);
-		batch.draw(container, 157, 2, 40, 30);
+			if(Gdx.input.isKeyPressed(Keys.C)) {
+				pausedMenu = false;
+			}
+			if(pausedMenu) {
+				mouseInWorld3D.x = Gdx.input.getX();
+				mouseInWorld3D.y = Gdx.input.getY();
+				mouseInWorld3D.z = 0;
+				gameGui.getCamera().unproject(mouseInWorld3D);
+				Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+				batch.begin();
 
-		// Draw shapes in the container
-		for (int i = 0; i < shapeSprites.length; i++)
-			drawSpriteResized(shapeSprites[i], 165 - (i) * 40+(currentShapeIndex*40), 4, 0);
 
-		batch.end();
 
-		// Shape Debug outline
-		debugRenderer.render(world, gameGui.getCamera().combined);
+				mouseClickMenu(mouseInWorld3D.x, mouseInWorld3D.y);
 
-		if(currentShapeIndex!=shapeSprites.length)
-		mouseClick();
+				batch.draw(background, 0, 0, 200, 200);
+				batch.draw(base, 50, 42, 105, 10);
+				batch.draw(paused, 40, 80, 120, 60);
+				batch.draw(resume.texture, resume.x, resume.y, resume.width, resume.height);
+				batch.draw(restart.texture, restart.x, restart.y, restart.width, restart.height);
+				batch.draw(startMenu.texture, startMenu.x, startMenu.y, startMenu.width, startMenu.height);
 
-		if (currentShapeIndex == shapeSprites.length)
-			winCheck();
+				batch.end();
+			}
+
+			if(!pausedMenu) {
+				mouseInWorld3D.x = Gdx.input.getX();
+				mouseInWorld3D.y = Gdx.input.getY();
+				mouseInWorld3D.z = 0;
+				gameGui.getCamera().unproject(mouseInWorld3D);
+				mouseInWorld2D.x = mouseInWorld3D.x;
+				mouseInWorld2D.y = mouseInWorld3D.y;
+
+				Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+				// Step the physics world.
+				stepWorld();
+
+				batch.begin();
+
+				batch.draw(background, 0, 0, 200, 200);
+				batch.draw(base, 50, 42, 105, 10);
+
+
+				//		batch.draw((Texture) anim.getKeyFrame(Gdx.graphics.getDeltaTime(), true),0,0);
+				// Disegna la Forma Corrente sul puntatore
+				if (currentShapeIndex < shapeSprites.length) {
+					drawSprite(shapeSprites[currentShapeIndex], mouseInWorld2D.x, mouseInWorld2D.y, 0);
+				}
+				// draw the shapes on the screen
+				for (int i = 0; i < currentShapeIndex; i++)
+					if (shapeBodies.length != 0) {
+						drawSprite(shapeSprites[i], shapeBodies[i].getPosition().x, shapeBodies[i].getPosition().y,
+								(float) Math.toDegrees(shapeBodies[i].getAngle()));
+
+						if (shapeBodies[i].getPosition().y < 0)
+							loseCheck();
+					}
+				batch.draw(container, 2, 2, 150, 30);
+				batch.draw(container, 157, 2, 40, 30);
+
+				// Draw shapes in the container
+				for (int i = 0; i < shapeSprites.length; i++)
+					drawSpriteResized(shapeSprites[i], 165 - (i) * 40+(currentShapeIndex*40), 4, 0);
+
+				batch.end();
+
+				// Shape Debug outline
+				debugRenderer.render(world, gameGui.getCamera().combined);
+
+				if(currentShapeIndex!=shapeSprites.length)
+					if(secondClick -firstClick > 60	)
+					mouseClick();
+
+				if (currentShapeIndex == shapeSprites.length)
+					winCheck();
+			}
+		}
 
 	}
 
+	private void mouseClickMenu(float mouseX, float mouseY) {
+		//System.out.println(mouseX + "   " + mouseY);
+		long secondClick = 0;
+		if(menu) {
+			if((mouseX >= newGameButton.x && mouseX <= (newGameButton.width + newGameButton.x)) && (mouseY >= newGameButton.y && mouseY <= (newGameButton.height +newGameButton.y))) {
+				newGameButton.setX(72);
+				newGameButton.setY(98);
+				newGameButton.setWidth(26);
+				newGameButton.setHeight(20);
+				newGameButton.setSelected(true);
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+					secondClick = System.currentTimeMillis();
+					if(secondClick - firstClick > 60) 
+						this.menu = false;
+				}
+			}
+			else {
+				newGameButton.setX(75);
+				newGameButton.setY(100);
+				newGameButton.setWidth(20);
+				newGameButton.setHeight(16);
+				newGameButton.setSelected(false);
+			}
+
+			if((mouseX >= exitButton.x && mouseX <= (exitButton.width + exitButton.x)) && (mouseY >= exitButton.y && mouseY <= (exitButton.height +exitButton.y))) {
+				exitButton.setX(102);
+				exitButton.setY(98);
+				exitButton.setWidth(26);
+				exitButton.setHeight(20);
+				exitButton.setSelected(true);
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+					secondClick = System.currentTimeMillis();
+					if(secondClick - firstClick > 60) 
+						Gdx.app.exit();
+				}
+			}
+			else {
+				exitButton.setX(105);
+				exitButton.setY(100);
+				exitButton.setWidth(20);
+				exitButton.setHeight(16);
+				exitButton.setSelected(false);
+			}
+		}
+
+		if(pausedMenu) {
+			if((mouseX >= resume.x && mouseX <= (resume.width + resume.x)) && (mouseY >= resume.y && mouseY <= (resume.height +resume.y))) {
+				resume.setX(48);
+				resume.setY(88);
+				resume.setWidth(26);
+				resume.setHeight(20);
+				resume.setSelected(true);
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+					secondClick = System.currentTimeMillis();
+					if(secondClick - firstClick > 60) 
+						pausedMenu = false;
+					
+				}
+			}
+			else {
+				resume.setX(50);
+				resume.setY(90);
+				resume.setWidth(20);
+				resume.setHeight(16);
+				resume.setSelected(false);
+			}
+
+			if((mouseX >= restart.x && mouseX <= (restart.width + restart.x)) && (mouseY >= restart.y && mouseY <= (restart.height +restart.y))) {
+				restart.setX(88);
+				restart.setY(88);
+				restart.setWidth(26);
+				restart.setHeight(20);
+				restart.setSelected(true);
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+					secondClick = System.currentTimeMillis();
+					//implementare restart livello
+					if(secondClick - firstClick > 60) 
+						Gdx.app.exit();
+				}
+			}
+			else {
+				restart.setX(90);
+				restart.setY(90);
+				restart.setWidth(20);
+				restart.setHeight(16);
+				restart.setSelected(false);
+			}
+
+			if((mouseX >= startMenu.x && mouseX <= (startMenu.width + startMenu.x)) && (mouseY >= startMenu.y && mouseY <= (startMenu.height +startMenu.y))) {
+				startMenu.setX(128);
+				startMenu.setY(88);
+				startMenu.setWidth(26);
+				startMenu.setHeight(20);
+				startMenu.setSelected(true);
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+					secondClick = System.currentTimeMillis();
+					if(secondClick - firstClick > 60) {
+						pausedMenu = false;
+						menu = true;
+					}
+				}
+
+			}
+			else {
+				startMenu.setX(130);
+				startMenu.setY(90);
+				startMenu.setWidth(20);
+				startMenu.setHeight(16);
+				startMenu.setSelected(false);
+			}
+		}
+		firstClick = secondClick;
+		System.out.println(firstClick +"    " + secondClick);
+	}
+
 	private TimerTask timerTask = new TimerTask() {
-		
+
 		@Override
 		public void run() {
 			System.out.println("Hai Vinto");
@@ -346,39 +615,39 @@ public class GameManager extends ApplicationAdapter {
 	boolean run=true;
 	LocalTime time;
 	public void winCheck() {
-//		time=java.time.LocalTime.now().plusSeconds(5);
-//		
-//		System.out.println(time);
-//		System.out.println(java.time.LocalTime.now()+" Corrente");
-//		while(java.time.LocalTime.now()!=time) {
-//			System.out.println("In attesa");
-//		}
-//		System.out.println("132");
-		
+		//		time=java.time.LocalTime.now().plusSeconds(5);
+		//		
+		//		System.out.println(time);
+		//		System.out.println(java.time.LocalTime.now()+" Corrente");
+		//		while(java.time.LocalTime.now()!=time) {
+		//			System.out.println("In attesa");
+		//		}
+		//		System.out.println("132");
+
 		if(currentLevel!=levelnum-1)
-		nextLevel();
+			nextLevel();
 		else {
 			System.out.println("Gioco Finito");
 			//TODO Schermata finale
 		}
-		
-//		final Timer timer = new Timer();
-//		timer.schedule(new TimerTask() {
-//
-//			@Override
-//			public void run() {
-//				if(run) {
-//				System.out.println("Hai Vinto");
-//				nextLevel();
-//				}
-//				else {
-////				Gdx.app.exit();
-//					this.cancel();
-//					timer.purge();
-//				}
-//				//TODO nextLevel
-//			}
-//		}, 5000);
+
+		//		final Timer timer = new Timer();
+		//		timer.schedule(new TimerTask() {
+		//
+		//			@Override
+		//			public void run() {
+		//				if(run) {
+		//				System.out.println("Hai Vinto");
+		//				nextLevel();
+		//				}
+		//				else {
+		////				Gdx.app.exit();
+		//					this.cancel();
+		//					timer.purge();
+		//				}
+		//				//TODO nextLevel
+		//			}
+		//		}, 5000);
 	}
 
 	/**
@@ -421,7 +690,7 @@ public class GameManager extends ApplicationAdapter {
 	void loseCheck() {
 		System.out.println("Hai Perso Pezzo Caduto");
 		Gdx.app.exit();
-		}
+	}
 
 	@Override
 	public void dispose() {
@@ -432,14 +701,14 @@ public class GameManager extends ApplicationAdapter {
 		world.dispose();
 
 		debugRenderer.dispose();
-		
+
 	}
 	public void nextLevel() {
 		currentLevel++;
 		currentShapeIndex=0;
-         for(Body bod: shapeBodies){
-             world.destroyBody(bod);
-         }
-         loadSprites();
+		for(Body bod: shapeBodies){
+			world.destroyBody(bod);
+		}
+		loadSprites();
 	}
 }

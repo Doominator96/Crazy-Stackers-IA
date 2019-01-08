@@ -65,9 +65,9 @@ public class GameGui {
 
 		batch.begin();
 		batch.draw(loadTexture.background, 0, 0,1800,900);
-		batch.draw(loadTexture.base, 400, 220,1000,60);
-		batch.draw(loadTexture.container,30,2,1400,180);
-		batch.draw(loadTexture.container,1440,2,350,180);
+//		batch.draw(loadTexture.base, 400, 220,1000,60);
+//		batch.draw(loadTexture.container,30,2,1400,180);
+//		batch.draw(loadTexture.container,1440,2,350,180);
 		batch.end();
 
 
