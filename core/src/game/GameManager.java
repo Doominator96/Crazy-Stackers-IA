@@ -565,8 +565,10 @@ public class GameManager extends ApplicationAdapter {
 				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
 					secondClick = System.currentTimeMillis();
 					//implementare restart livello
-					if(secondClick - firstClick > 60) 
-						Gdx.app.exit();
+					if(secondClick - firstClick > 60) { 
+						restartLevel();
+						pausedMenu=false;
+					}
 				}
 			}
 			else {
@@ -601,7 +603,15 @@ public class GameManager extends ApplicationAdapter {
 			}
 		}
 		firstClick = secondClick;
-		System.out.println(firstClick +"    " + secondClick);
+//		System.out.println(firstClick +"    " + secondClick);
+	}
+
+	public void restartLevel() {
+		for(int i=0;i<currentShapeIndex;i++){
+			world.destroyBody(shapeBodies[i]);
+		}
+		currentShapeIndex=0;
+		loadSprites();
 	}
 
 	private TimerTask timerTask = new TimerTask() {
