@@ -1,16 +1,20 @@
 package game;
 
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.TimerTask;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g3d.utils.ShapeCache;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -28,12 +32,6 @@ import com.codeandweb.physicseditor.PhysicsShapeCache;
 import graphic.GameGui;
 import graphic.LoadTexture;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-
 class Button {
 	public String name;
 	public Texture texture;
@@ -42,6 +40,7 @@ class Button {
 	public int width;
 	public int height;
 	public boolean selected;
+
 
 	public Button(String name, Texture texture, int x, int y, int width, int height) {
 		this.name = name;
@@ -113,7 +112,9 @@ public class GameManager extends ApplicationAdapter {
 	private final Vector3 mouseInWorld3D = new Vector3();
 	LoadTexture loadTexture;
 	private int levelnum=2;
+	boolean done = true;
 
+	long timer;
 	/**
 	 * This affects the speed of our simulation, and how gravity behaves. This is
 	 * set to our game's expected FPS rate for optimal performance for what we're
@@ -125,14 +126,14 @@ public class GameManager extends ApplicationAdapter {
 	 * Setting it to a lower value will result in a choppy frame rate, but increase
 	 * the amount of polygons the simulation can process.
 	 */
-	static final float STEP_TIME = 1f / 60f;
+	static final float STEP_TIME = 1f / 100f;
 
 	/**
 	 * Velocity iterations will improve the stability of the physics simulation. A
 	 * higher value will provide greater precision for collision detection, at the
 	 * cost of consuming more of the CPU.
 	 */
-	static final int VELOCITY_ITERATIONS = 6;
+	static final int VELOCITY_ITERATIONS = 6; //c'era 6
 
 	int currentShapeIndex = 0;
 	/**
@@ -143,7 +144,7 @@ public class GameManager extends ApplicationAdapter {
 	 * understanding of both velocity and position iterations:
 	 * http://www.iforce2d.net/b2dtut/collision-anatomy
 	 */
-	static final int POSITION_ITERATIONS = 4;
+	static final int POSITION_ITERATIONS = 4; //c'era 4 prima
 
 	/**
 	 * This is a scalar used to make our sprites fit within the physics simulation.
@@ -480,10 +481,15 @@ public class GameManager extends ApplicationAdapter {
 
 				if(currentShapeIndex!=shapeSprites.length)
 					if(secondClick -firstClick > 60	)
-					mouseClick();
+						mouseClick();
 
-				if (currentShapeIndex == shapeSprites.length)
+				if (currentShapeIndex == shapeSprites.length) {
+
+					if(done)
+						timer = System.currentTimeMillis();
+					done = false;
 					winCheck();
+				}
 			}
 		}
 
@@ -545,7 +551,7 @@ public class GameManager extends ApplicationAdapter {
 					secondClick = System.currentTimeMillis();
 					if(secondClick - firstClick > 60) 
 						pausedMenu = false;
-					
+
 				}
 			}
 			else {
@@ -603,7 +609,7 @@ public class GameManager extends ApplicationAdapter {
 			}
 		}
 		firstClick = secondClick;
-//		System.out.println(firstClick +"    " + secondClick);
+		//		System.out.println(firstClick +"    " + secondClick);
 	}
 
 	public void restartLevel() {
@@ -625,20 +631,24 @@ public class GameManager extends ApplicationAdapter {
 	boolean run=true;
 	LocalTime time;
 	public void winCheck() {
-		//		time=java.time.LocalTime.now().plusSeconds(5);
-		//		
-		//		System.out.println(time);
-		//		System.out.println(java.time.LocalTime.now()+" Corrente");
-		//		while(java.time.LocalTime.now()!=time) {
-		//			System.out.println("In attesa");
-		//		}
-		//		System.out.println("132");
+		//				time=java.time.LocalTime.now().plusSeconds(5);
+		//				
+		//				System.out.println(time);
+		//				System.out.println(java.time.LocalTime.now()+" Corrente");
+		//				while(java.time.LocalTime.now()!=time) {
+		//					System.out.println("In attesa");
+		//				}
+		//				System.out.println("132");
 
-		if(currentLevel!=levelnum-1)
-			nextLevel();
-		else {
-			System.out.println("Gioco Finito");
-			//TODO Schermata finale
+
+		System.out.println("jumbo");
+		if(System.currentTimeMillis() - timer >= 5000) {
+			if(currentLevel!=levelnum-1) 
+				nextLevel();
+			else {
+				System.out.println("Gioco Finito");
+				//TODO Schermata finale
+			}	
 		}
 
 		//		final Timer timer = new Timer();
@@ -647,13 +657,20 @@ public class GameManager extends ApplicationAdapter {
 		//			@Override
 		//			public void run() {
 		//				if(run) {
-		//				System.out.println("Hai Vinto");
-		//				nextLevel();
+		//					System.out.println("Hai Vinto");
+		//					if(currentLevel!=levelnum-1) {
+		//						nextLevel();
+		//
+		//					}
+		//					else {
+		//						System.out.println("Gioco Finito");
+		//						//TODO Schermata finale
+		//					}	
 		//				}
+		//				
 		//				else {
-		////				Gdx.app.exit();
-		//					this.cancel();
-		//					timer.purge();
+		//					//				Gdx.app.exit();
+		//
 		//				}
 		//				//TODO nextLevel
 		//			}
@@ -714,6 +731,7 @@ public class GameManager extends ApplicationAdapter {
 
 	}
 	public void nextLevel() {
+		done = true;
 		currentLevel++;
 		currentShapeIndex=0;
 		for(Body bod: shapeBodies){
