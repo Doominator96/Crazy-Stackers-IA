@@ -2,7 +2,7 @@ package logic;
 
 import java.awt.Point;
 
-public class Square implements Shape {
+public class Square {
 
 	private int base;
 	private int height;

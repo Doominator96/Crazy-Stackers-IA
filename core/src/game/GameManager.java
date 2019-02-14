@@ -35,6 +35,7 @@ import utils.GameConfig;
 
 public class GameManager extends ApplicationAdapter {
 	private GameGui gameGui;
+	private GameManagerDLV gameManagerDLV;
 	
 	static LoadTexture loadTexture;
 	StartMenu startMenu;
@@ -118,7 +119,8 @@ public class GameManager extends ApplicationAdapter {
 		physicsBodies = new PhysicsShapeCache("shapes2.xml");
 
 		debugRenderer = new Box2DDebugRenderer();
-
+		
+		gameManagerDLV = new GameManagerDLV();
 
 	}
 

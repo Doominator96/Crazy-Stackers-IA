@@ -16,7 +16,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 
 import game.GameManager;
 import game.StartMenu;
-import logic.Shape;
+import logic.ShapeIA;
 import logic.Square;
 import utils.GameConfig;
 
@@ -145,7 +145,7 @@ public class GameGui {
 			drawSpriteResized(loadTexture.shapeSprites[i], 165 - (i) * 40 + (GameConfig.currentShapeIndex * 40), 4, 0,batch);
 
 		font.getData().setScale((float) 0.5);
-		font.draw(batch, "Level: "+GameConfig.currentLevel+1,1,195);
+		font.draw(batch, "Level: "+(int)(GameConfig.currentLevel+1),1,195);
 		
 		batch.end();
 		

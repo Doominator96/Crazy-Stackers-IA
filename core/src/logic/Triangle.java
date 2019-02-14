@@ -2,7 +2,7 @@ package logic;
 
 import java.awt.Point;
 
-public class Triangle implements Shape{
+public class Triangle {
 
 	private int base;
 	private int height;
