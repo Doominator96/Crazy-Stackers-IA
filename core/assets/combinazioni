@@ -1,0 +1,92 @@
+%dlv2
+
+%%fatti passati dai file%%
+base(45).
+base(55).
+base(65).
+base(75).
+base(85).
+base(95).
+base(105).
+base(115).
+base(125).
+base(135).
+altezza(55).
+altezza(95).
+altezza(135).
+contatore(1..3).
+
+%%%tipo 0=quadrato, tipo 1 rettangolo, tipo 2cerchio 3 triangolo%%%
+
+%%guess delle posizioni possibili per le 3 figure
+posiziona(X,Y,C) | nonPosiziona(X,Y,C) :- base(X), altezza(Y),contatore(C).
+
+%%assegnazione di ogni posizione ad una figura
+final(X,Y,T,C) :- posiziona(X,Y,C), shape(_,_,T,C).
+
+%%le tre figure NON possono avere altezze diverse da 55,95,135
+:-final(_,Y,_,1), Y != 55.
+:-final(_,Y,_,2), Y != 95.
+:-final(_,Y,_,3), Y != 135.
+
+%il contatore delle figure NON deve essere maggiore di 3.
+:-#count{C:final(_,_,_,C)} >3.
+
+%il contatore delle figure NON deve essere minore di 3.
+:-#count{C:final(_,_,_,C)} <3.
+
+%in un answer set la stessa figura NON può avere posizioni diverse
+:-final(X,_,_,C), final(X1,_,_,C), X1 != X.
+:-final(_,Y,_,C), final(_,Y1,_,C), Y1 != Y.
+
+%non è possibile posizionare un quadrato sopra un altro dopo la meta del primo (destra)
+:-final(X,_,0,C), final(X1,_,0,C1), C < C1, X1 <= X, X1 > (X+20).
+
+%non è possibile posizionare un quadrato sopra un altro dopo la meta del primo (sinistra)
+:-final(X,_,0,C), final(X1,_,0,C1), C < C1, (X1 +36) >=X, (X1+35) < (X+25).
+
+%non è possibile posizionare un triangolo sopra un quadrato dopo la meta del primo (destra)
+:-final(X,_,0,C), final(X1,_,3,C1), C < C1, X1 < X, X1 >= X+18.
+
+%non è possibile posizionare un triangolo sopra un quadrato dopo la meta del primo (sinistra)
+:-final(X,_,0,C), final(X1,_,3,C1), C < C1, X1 +36 >X, X1+36 <= X+18.
+
+%non è possibile posizionare un rettangolo sopra un altro dopo la meta del primo (destra)
+:-final(X,_,1,C), final(X1,_,1,C1), C < C1, X1 < X, X1 >= X+18.
+
+%non è possibile posizionare un rettangolo sopra un altro dopo la meta del primo (sinistra)
+:-final(X,_,1,C), final(X1,_,1,C1), C < C1, X1 +36 >X, X1+36 <= X+18.
+
+%non è possibile posizionare un triangolo sopra un rettangolo dopo la meta del primo (destra)
+:-final(X,_,1,C), final(X1,_,3,C1), C < C1, X1 < X, X1 >= X+18.
+
+%non è possibile posizionare un triangolo sopra un rettangolo dopo la meta del primo (sinistra)
+:-final(X,_,1,C), final(X1,_,3,C1), C < C1, X1 +36 >X, X1+36 <= X+18.
+
+%non è possibile posizionare un rettangolo sopra un quadrato dopo la meta del primo (destra)
+:-final(X,_,0,C), final(X1,_,1,C1), C < C1, X1 < X, X1 >= X+18.
+
+%non è possibile posizionare un rettangolo sopra un quadrato dopo la meta del primo (sinistra)
+:-final(X,_,0,C), final(X1,_,1,C1), C < C1, X1 +36 >X, X1+36 <= X+18.
+
+%non è possibile posizionare un quadrato sopra un rettangolo dopo la meta del primo (destra)
+:-final(X,_,1,C), final(X1,_,0,C1), C < C1, X1 < X, X1 >= X+18.
+
+%non è possibile posizionare un quadrato sopra un rettangolo dopo la meta del primo (sinistra)
+:-final(X,_,1,C), final(X1,_,0,C1), C < C1, X1 +36 >X, X1+36 <= X+18.
+
+%NON è possibile posizionare una figura sopra il cerchio(destra)
+:-final(X,_,2,C), final(X1,_,_,C1),C < C1, X1 < X, X1 < X+18.
+
+%NON è possibile posizionare una figura sopra il cerchio(sinistra)
+%:-final(X,_,2,C), final(X1,_,_,C1), C < C1, X1 +36 >X.
+
+%NON è possibile posizionare una figura sopra il triangolo(destra)
+:-final(X,_,3,C), final(X1,_,_,C1), C < C1, X1 < X, X1 < X+36.
+
+%NON è possibile posizionare una figura sopra il triangolo(sinistra)
+%:-final(X,_,3,C), final(X1,_,_,C1), C < C1, X1 +36 >X.
+
+%%assegno la soluzione finale dove unico parametro che mi interessa è X
+fina(X,Y,T,C) :-final(X,Y,T,C).
+

@@ -1,0 +1,111 @@
+%%fatti presi da file dove ci sono le dimensioni delle figure
+bucoD(10,10,0).
+shapeD(35,35,0).
+shapeD(35,10,1).
+shapeD(15,15,2).
+shapeD(35,15,3).
+
+
+%trovo coordinate dei buchi
+bucoFinale(X,Y,X,Y1,X1,Y1,X1,Y,T) :- buco(X,Y,T), bucoD(W,H,T), X1 =X+W, Y1= Y+H.
+
+%guess delle coordinate delle figure, serve per prendere le figure della stessa soluzione dove l'identificativo è L
+shapeFinale(X,Y,X,Y1,X1,Y1,X1,Y,T,L)| nonshapeFinale(X,Y,X,Y1,X1,Y1,X1,Y,T,L):- shape(X,Y,T,L), shapeD(W,H,T), X1 =X+W, Y1= Y+H.
+
+%genero 3 coordiante per il triangolo%%%
+%triangolo(X,Y,X1,Y1,X2,Y,3,L) :- shapeFinale(X,Y,_,Y1,_,_,X2,_,3,L), X1 = X2-9.
+
+%NON posso prendere soluzioni diverse
+:-shapeFinale(_,_,_,_,_,_,_,_,_,L),shapeFinale(_,_,_,_,_,_,_,_,_,L1), L != L1.
+
+%le figure della soluzione NON possono essere meno di tre.
+:-#count{L,X,Y :shapeFinale(X,Y,_,_,_,_,_,_,_,L)} < 3.
+
+%%eseguo i vari controlli per vedere se la figura copre gli angoli dei buchi%%
+%controllo angolo basso sinistra
+%fuori x
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Xb < X. [1:2]
+%fuori x1
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Xb > X1. [1:2]
+%fuori y
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Yb < Y. [1:2]
+%fuori y1
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Yb > Y1. [1:2]
+
+
+%controllo angolo alto sinistra
+%fuori x
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,Xb,Yb,_,_,_,_,_),Xb < X. [1:2]
+%fuori x1
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,Xb,Yb,_,_,_,_,_), Xb > X1. [1:2]
+%fuori y
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,Xb,Yb,_,_,_,_,_), Yb < Y. [1:2]
+%fuori y1
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,Xb,Yb,_,_,_,_,_), Yb > Y1. [1:2]
+
+%controllo angolo alto destra
+%fuori x
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,_,_,Xb,Yb,_,_,_),Xb < X. [1:2]
+%fuori x1
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,_,_,Xb,Yb,_,_,_),Xb > X1. [1:2]
+%fuori y
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,_,_,Xb,Yb,_,_,_),Yb < Y. [1:2]
+%fuori y1
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,_,_,Xb,Yb,_,_,_), Yb > Y1. [1:2]
+
+%controllo angolo basso sinistra
+%fuori x
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,_,_,_,_,Xb,Yb,_), Xb < X. [1:2]
+%fuori x1
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,_,_,_,_,Xb,Yb,_), Xb > X1. [1:2]
+%fuori y
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,_,_,_,_,Xb,Yb,_), Yb < Y. [1:2]
+%fuori y1
+:~ shapeFinale(X,Y,_,Y1,X1,_,_,_,T,_), bucoFinale(_,_,_,_,_,_,Xb,Yb,_), Yb > Y1. [1:2]
+
+
+
+
+%%%%%%%%%
+%controllo angolo basso sinistra dentro triangolo
+%fuori x
+%:~ triangolo(X,Y,_,Y1,X1,_,3,_),  bucoFinale(Xb,Yb,_,_,_,_,_,_,_),Xb < X. [1:2]
+%fuori x1
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_), bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Xb > X2. [1:2]
+%fuori y
+%:~triangolo(X,Y,_,Y1,X1,_,3,_),  bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Yb < Y. [1:2]
+%fuori y1
+%:~ triangolo(X,Y,_,Y1,X1,_,3,_),  bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Yb > Y1. [1:2]
+
+
+%controllo angolo alto sinistra dentro triangolo
+%fuori x
+%:~ triangolo(X,Y,_,Y1,X1,_,3,_),  bucoFinale(Xb,Yb,_,_,_,_,_,_,_),Xb < X. [1:2]
+%fuori x1
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_),  bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Xb > X2. [1:2]
+%fuori y
+%:~triangolo(X,Y,_,Y1,X1,_,3,_),  bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Yb < Y. [1:2]
+%fuori y1
+%:~ triangolo(X,Y,_,Y1,X1,_,3,_),  bucoFinale(Xb,Yb,_,_,_,_,_,_,_), Yb > Y1. [1:2]
+
+%controllo angolo alto dentro triangolo
+%fuori x
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_), bucoFinale(_,_,_,_,Xb,Yb,_,_,_),Xb < X. [1:2]
+%fuori x1
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_), bucoFinale(_,_,_,_,Xb,Yb,_,_,_), Xb > X2. [1:2]
+%fuori y
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_), bucoFinale(_,_,_,_,Xb,Yb,_,_,_), Yb < Y. [1:2]
+%fuori y1
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_), bucoFinale(_,_,_,_,Xb,Yb,_,_,_), Yb > Y1. [1:2]
+
+%controllo angolo basso sinistro dentro triangolo
+%fuori x
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_), bucoFinale(_,_,_,_,_,_,Xb,Yb,_), Xb < X. [1:2]
+%fuori x1
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_), bucoFinale(_,_,_,_,_,_,Xb,Yb,_), Xb > X1. [1:2]
+%fuori y
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_), bucoFinale(_,_,_,_,_,_,Xb,Yb,_), Yb < Y. [1:2]
+%fuori y1
+%:~ triangolo(X,Y,X2,Y1,X1,_,3,_), bucoFinale(_,_,_,_,_,_,Xb,Yb,_), Yb > Y1. [1:2]
+
+fina(X,A,B,C) :- shapeFinale(A,B,C,_,_,_,_,_,_,X).

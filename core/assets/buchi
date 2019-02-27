@@ -1,0 +1,12 @@
+
+shapeD(0,35,35).
+
+posiziona(X,Y,T,L) | nonPosiziona(X,Y,T,L) :- shape(X,Y,T,L).
+:-posiziona(_,_,_,L), posiziona(_,_,_,L1), L != L1.
+
+:-#count{L,Y: posiziona(_,Y,_,L)} <3.
+
+posiziona(X,Y1,T,L) :- posiziona(X1,Y1,T,L), shape(X2,Y1,T,L),shapeD(T,W,H), X = X1 +10, X < X2 +W.
+
+buco(X,Y,T,L) :-posiziona(X,Y,T,L).
+

@@ -41,18 +41,21 @@ public class GameConfig {
 	 * Without it the sprites would be too big to be drawn on the screen.
 	 */
 	public static final float SCALE = 0.25f;
-
+	public static final float SMULTIPLIER =1.5f;
 	/**
 	 * Adjust this value to change the amount of Shapes.
 	 */
-	public static final int COUNT = 5;
+	public static final int COUNT = 3;
 	
-	public static String[][] levels = new String[][] {{ "square", "square", "square", "triangle", "triangle" },{ "circle", "circle", "rectangle", "square", "triangle" }};
-
+//	public static String[][] levels = new String[][] {{ "square", "square", "square", "triangle", "triangle" },{ "circle", "circle", "rectangle", "square", "triangle" }};
+	public static String[][] levels = new String[][] {{ "square", "square", "square"},{ "square", "rectangle", "circle" },
+													{ "rectangle", "circle", "triangle" },{ "square", "rectangle", "triangle" }
+													,{ "rectangle", "circle", "circle" }};
+	
 	public static int currentLevel=0;
-	
-	public static int levelnum=2;
-	
+	public static boolean test = true;
+	public static int levelnum=5;
+	public static boolean buchi = false;
 	public static Vector2 mouseInWorld2D = new Vector2();
 	public static Vector3 mouseInWorld3D = new Vector3();
 }

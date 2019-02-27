@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
 import graphic.LoadTexture;
+import utils.GameConfig;
 
 public class StartMenu {
 
@@ -12,6 +13,8 @@ public class StartMenu {
 	public static Button startMenu;
 	public static Button resume;
 	public static Button restart;
+	
+	public static boolean lvlSelect = false;
 	
 	static long firstClick = 0;
 	public static boolean menu;
@@ -29,6 +32,9 @@ public class StartMenu {
 		
 		menu=true;
 	}
+	
+
+	
 	public static void mouseClickMenu(float mouseX, float mouseY) {
 		//System.out.println(mouseX + "   " + mouseY);
 		long secondClick = 0;
@@ -41,8 +47,11 @@ public class StartMenu {
 				newGameButton.setSelected(true);
 				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
 					secondClick = System.currentTimeMillis();
-					if(secondClick - firstClick > 60) 
-						menu = false;
+					if(secondClick - firstClick > 60) {
+						lvlSelect=true;
+//						System.out.println(lvlSelect);
+						//menu = false;
+					}
 				}
 			}
 			else {
@@ -144,5 +153,67 @@ public class StartMenu {
 		}
 		firstClick = secondClick;
 		//		System.out.println(firstClick +"    " + secondClick);
+	}
+	public static void levelSelect(float mouseX, float mouseY) {
+		long secondClick = 0;
+		if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+//			System.out.println("X: "+mouseX+" Y: "+mouseY);
+		//livello1
+		if((mouseX >=78  && mouseX <=121 ) && (mouseY >=148 && mouseY <= 167 )) {
+			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+				secondClick = System.currentTimeMillis();
+				if(secondClick - firstClick > 60) {
+					menu = false;
+					GameConfig.currentLevel=0;
+				}
+			}
+		}
+		//livello2
+		if((mouseX >=78  && mouseX <=121 ) && (mouseY >=117 && mouseY <= 135 )) {
+			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+				secondClick = System.currentTimeMillis();
+				if(secondClick - firstClick > 60) {
+					menu = false;
+					GameManager.changeLevel(1);					}
+			}
+		}
+		//livello3
+		if((mouseX >=78  && mouseX <=121 ) && (mouseY >=85 && mouseY <= 104 )) {
+			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+				secondClick = System.currentTimeMillis();
+				if(secondClick - firstClick > 60) {
+					menu = false;
+					GameManager.changeLevel(2);					}
+			}
+		}
+		//livello4
+		if((mouseX >=78  && mouseX <=121 ) && (mouseY >=53 && mouseY <= 72 )) {
+			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+				secondClick = System.currentTimeMillis();
+				if(secondClick - firstClick > 60) {
+					menu = false;
+					GameManager.changeLevel(3);					}
+			}
+		}
+		//livello5
+		if((mouseX >=78  && mouseX <=121 ) && (mouseY >=22 && mouseY <= 40 )) {
+			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+				secondClick = System.currentTimeMillis();
+				if(secondClick - firstClick > 60) {
+					menu = false;
+					GameManager.changeLevel(4);											
+				}
+			}
+		}
+		//back
+		if((mouseX >=10  && mouseX <=22 ) && (mouseY >=14 && mouseY <= 34 )) {
+			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+				secondClick = System.currentTimeMillis();
+				if(secondClick - firstClick > 60) {
+					lvlSelect=false;
+				}
+			}
+		}
+//		System.out.println(menu);
 	}
 }

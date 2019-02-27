@@ -22,6 +22,9 @@ public class ShapeIA {
 		this.count = count;
 	}
 	
+	public ShapeIA() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public int getX() {
 		return x;
@@ -46,6 +49,31 @@ public class ShapeIA {
 	public void setValue(int value) {
 		this.type = value;
 	}
+
+
+	public int getType() {
+		return type;
+	}
+
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+
+	public int getCount() {
+		return count;
+	}
+
+
+	public void setCount(int count) {
+		this.count = count;
+	}
 	
+	@Override
+	public String toString() {
+		String string = "X: " + x + " Y: " +y + " Type: " + type + " Count: " + count;
+		return string;
+	}
 	
 }
