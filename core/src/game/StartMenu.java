@@ -115,7 +115,7 @@ public class StartMenu {
 					secondClick = System.currentTimeMillis();
 					//implementare restart livello
 					if(secondClick - firstClick > 60) { 
-						GameManager.restartLevel();
+						GameManager.restartLevelButton();
 						pausedMenu=false;
 					}
 				}

@@ -38,7 +38,8 @@ public class GameManager extends ApplicationAdapter {
 	private GameManagerDLV gameManagerDLV;
 
 	public boolean scrivi = false;
-	boolean done = true;
+	static boolean done = true;
+	static boolean changed = true;
 
 	static LoadTexture loadTexture;
 	StartMenu startMenu;
@@ -58,7 +59,7 @@ public class GameManager extends ApplicationAdapter {
 
 	static boolean vincente = true;
 	boolean first = false;
-	boolean second = false;
+	static boolean second = false;
 	boolean aperto = false;
 	int contatoreProve =0;
 	int contatore = 0;
@@ -303,7 +304,10 @@ public class GameManager extends ApplicationAdapter {
 				if(Gdx.input.isKeyPressed(Keys.T) && !second && !scrivi) {
 					second = true;
 					try {
-						leggiFile();
+						if(changed) {
+							leggiFile();
+							changed = false;
+						}
 						System.out.println("csss" + coordinateFinali.size());
 						gameManagerDLV.calcolaAnswerSet(buchi);
 						ArrayList<Coordinate> arrayList;
@@ -533,6 +537,7 @@ public class GameManager extends ApplicationAdapter {
 		done = true;
 		first=false;
 		second = false;
+		changed = true;
 		GameConfig.currentLevel++;
 		generaBuchi();
 		GameConfig.currentShapeIndex=0;
@@ -543,7 +548,7 @@ public class GameManager extends ApplicationAdapter {
 		coordinateFinali.clear();
 	}
 
-	public int calcolaUpperY() {
+	public static int calcolaUpperY() {
 		if(GameConfig.currentLevel == 0)
 			return 135;
 		else if(GameConfig.currentLevel == 1)
@@ -557,7 +562,7 @@ public class GameManager extends ApplicationAdapter {
 	}
 
 
-	public void generaBuchi() {
+	public static void generaBuchi() {
 		GameConfig.buchi = true;
 		System.out.println("genero " + GameConfig.currentLevel);
 		//		buchi[0] = new Buco(45,55,0);
@@ -584,6 +589,18 @@ public class GameManager extends ApplicationAdapter {
 		GameConfig.currentLevel=lvl;
 		GameConfig.currentShapeIndex=0;
 		loadTexture.LoadSprite();
+	}
+
+	public static void restartLevelButton() {
+
+		for(int i=0;i<GameConfig.currentShapeIndex;i++){
+			world.destroyBody(shapeBodies[i]);
+		}
+		GameConfig.currentShapeIndex=0;
+		vincente = true;
+		generaBuchi();
+		done = true;
+		second = false;
 	}
 }
 
